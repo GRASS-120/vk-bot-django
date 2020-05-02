@@ -6,8 +6,8 @@ import vk
 import random
 import sqlite3
 
-secret_key = ""
-session = vk.Session(access_token="")
+secret_key = "very1secre2tkey3vk4bota"
+session = vk.Session(access_token="93b63503f60a88bd1efa8a9b051188ef3bd0f99ac5496e3d038f0e0a935716012c6aff2994437a11d18f0")
 vkAPI = vk.API(session)
 
 # Функция-обработчик
@@ -15,7 +15,7 @@ vkAPI = vk.API(session)
 def bot(request):
     body = json.loads(request.body)
     random_id = random.randint(1, 999999999999999999)
-    owner_id = 
+    owner_id = 194135879
 
     # Подключение БД
     connect = sqlite3.connect('db.sqlite')
@@ -24,7 +24,7 @@ def bot(request):
     # print(body)
 
     # Подтверждение сервера
-    if body == {"type": "confirmation", "group_id": , "secret": ""}:  #Берем запрос и ответ в CallBack API 
+    if body == {"type": "confirmation", "group_id": 194135879, "secret": "very1secre2tkey3vk4bota"}:  #Берем запрос и ответ в CallBack API 
         return HttpResponse("4d53ecd7")
 
     if body["type"] == "message_new":
@@ -45,10 +45,13 @@ def bot(request):
             cur.execute(query)
             msg = cur.fetchall()[0]
             send_message(user_id, msg, random_id)
-            print(query_msg)
 
-        elif user_msg.casefold() == 'привет':
-            msg = f"Ну привет-привет, {get_user_name(user_id)} 👋"
+        elif user_msg in query_msg[2] and user_msg.casefold() == 'привет':
+            query = f"UPDATE answer SET answ = 'Ну привет-привет, {get_user_name(user_id)}' WHERE id = 3 "
+            cur.execute(query)
+            query = "SELECT answ FROM answer"
+            cur.execute(query)
+            msg = cur.fetchall()[2]
             send_message(user_id, msg, random_id) 
 
         elif split_body[0] == '/say':
