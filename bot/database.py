@@ -29,10 +29,13 @@ def create(db_msg, db_answ):
 # )
 # """
 
-# query = "INSERT INTO users (group_id) VALUES (1)"
+# query = "DELETE FROM users WHERE id = 1"
 
-cur.execute()
+query = "SELECT * FROM groups"
+
+cur.execute(query)
 result = cur.fetchall()
+print(result)
 # print(create('sadasf', 'asfasf'))
 
 connect.commit()
