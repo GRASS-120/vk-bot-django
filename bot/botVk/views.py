@@ -6,6 +6,8 @@ import vk
 import random
 import sqlite3
 
+import database
+
 secret_key = "very1secre2tkey3vk4bota"
 session = vk.Session(access_token="93b63503f60a88bd1efa8a9b051188ef3bd0f99ac5496e3d038f0e0a935716012c6aff2994437a11d18f0")
 vkAPI = vk.API(session)
@@ -15,7 +17,7 @@ vkAPI = vk.API(session)
 def bot(request):
     body = json.loads(request.body)
     random_id = random.randint(1, 999999999999999999)
-    owner_id = 194135879
+    owner_id = -194135879
 
     # Подключение БД
     connect = sqlite3.connect('db.sqlite')
@@ -30,14 +32,25 @@ def bot(request):
     if body["type"] == "message_new":
 
         user_id = body["object"]["message"]["from_id"]
-        split_body = body["object"]["message"]["text"].split(maxsplit=1)
+        split_body = body["object"]["message"]["text"].split(maxsplit=3)
         query_msg = cur.execute("SELECT msg FROM answer").fetchall()
         user_msg = body["object"]["message"]["text"]
 
+        print(body)
+
         if user_msg == "/list":
-            query = "SELECT * FROM answer"
+
+            query = "SELECT id FROM answer"
             cur.execute(query)
-            msg = cur.fetchall()
+            result = cur.fetchall()
+            msg = []
+
+            for i in range(len(result)):
+                query = f"SELECT * FROM answer WHERE id = {i+1}"
+                cur.execute(query)
+                msg.append(cur.fetchall())
+                print(msg[i])
+        
             send_message(user_id, msg, random_id)
 
         elif user_msg in query_msg[0] and user_msg == "/start":
@@ -55,7 +68,10 @@ def bot(request):
             send_message(user_id, msg, random_id) 
 
         elif split_body[0] == '/say':
-            text = split_body[1]
+            if len(split_body) < 3:
+                text = split_body[1]
+            else:
+                text = f"{split_body[1]} {split_body[2]} {split_body[3]}"
             msg = text
             send_message(user_id, msg, random_id)
 
@@ -66,17 +82,24 @@ def bot(request):
             attachment = f"wall{owner_id}_2"
             send_message(user_id, msg, random_id, attachment)
 
+        elif split_body[0] == '/teach':
+            if len(split_body) > 4:
+                db_msg = split_body[1]
+                db_answ = split_body[2]
+
+                print(db_msg, db_answ)
+
+                msg = f'Бот выучил новую команду! level up 📈 \n {database.create(db_msg, db_answ)}'
+                send_message(user_id, msg, random_id)
+
+        # elif body["object"]["message"]["attachments"][0]["type"] == "sticker":
+        #     msg = 'Че стикеры шлешь?! 😡'
+        #     send_message(user_id, msg, random_id)
+        #     print(body)
+
         else:
-            msg = 'Чет не понимаю, что ты мне пишешь'
+            msg = 'Чет не понимаю, что ты мне пишешь, но ты можешь обучить меня с помощью команды /teach'
             send_message(user_id, msg, random_id)
-            
-    # # Стикеры 
-    # # if body["type"] == "message_new":
-    # #     if body["object"]["message"]["text"] == "":
-    # #         if body["object"]["message"]["attachments"][0]["type"] == "sticker":
-    # #             user_id = body["object"]["message"]["from_id"]
-    # #               msg = 'Че стикеры шлешь?! 😡'
-    # #                send_message(user_id, msg, random_id)
 
     connect.close()
     return HttpResponse("ok")

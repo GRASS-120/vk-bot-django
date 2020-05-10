@@ -1,63 +1,39 @@
 import sqlite3
 
-# Подключение к БД
 connect = sqlite3.connect('db.sqlite')
-# Создание курсора
 cur = connect.cursor()
 
-# Создание запроса
-# query = """
-# CREATE TABLE phonebook(
-#     id INT PRIMARY KEY,
-#     name TEXT,
-#     p_number INT
-# );
-# """
-
-# Добавление значений в таблицу
 # query = """
 # INSERT INTO phonebook (id, name, p_number) VALUES (0, 'Ярик', 88005553535);
 # """
 
-# Добавление значений в таблицу
-# query = """
-# INSERT INTO phonebook (id, name, p_number) VALUES
-# (1, 'Максим', 88005553535),
-# (2, 'Хыч', 88005553535),
-# (3, 'Егор', 88005553535),
-# (4, 'Святополк', 88005553535);
-# """
+# query = "SELECT * FROM answer;"
 
-# Выборка
-# query = """
-# SELECT * FROM phonebook
-# """
+def create(db_msg, db_answ):
+    query = f"INSERT INTO answer (msg, answ) VALUES ('{db_msg}', '{db_answ}');"
+    cur.execute(query)
+    return cur.fetchall()
 
 # query = """
-# CREATE TABLE answer(
+# CREATE TABLE groups(
 #     id INTEGER PRIMARY KEY AUTOINCREMENT,
-#     msg TEXT,
-#     answ TEXT
-# );
+#     group_name TEXT
+# )
 # """
 
-name = 0
+# query = """
+# CREATE TABLE users(
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     group_id INT,
+#     FOREIGN KEY (group_id) REFERENCES groups(id)
+# )
+# """
 
-query = f"""
-INSERT INTO answer (msg, answ) VALUES ('/say', )
-"""
+# query = "INSERT INTO users (group_id) VALUES (1)"
 
-# query = "UPDATE answer SET answ = 'Бот-вк начинает работу! 🤖\n Доступные команды: \n 1. /say <text> - повторяет фразу <text> \n 2. /list - показывает содержание таблицы sql \n 3. /post - высылает пост (в разработке)' WHERE id = 1"
-
-# Выполнение запроса
-cur.execute(query)
-
-# Выводит данные
+cur.execute()
 result = cur.fetchall()
-print(result)
+# print(create('sadasf', 'asfasf'))
 
-# Сохранение состояние БД
 connect.commit()
-
-# Выход из таблицы
 connect.close()
