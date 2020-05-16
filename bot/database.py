@@ -24,48 +24,37 @@ import sqlite3
 
 # query = "DROP TABLE groups"
 
-query = "DELETE FROM groups WHERE id < 10"
-
-# query = "INSERT INTO groups (group_name) VALUES ('User')"
-
-# query = "SELECT * FROM groups"
+# query = "DELETE FROM groups WHERE id < 10"
 
 # query = "SELECT * FROM answer;"
 
-# query = f"INSERT INTO answer (msg, answ) VALUES ('фывафыав', 'ass');"
-# cur.execute(query)
-# create("aoao", "aoao")
-# result = cur.fetchall()
-# print(result)
-# print(create('sadasf', 'asfasf'))
-
-# print(create("ss", "sss"))
-
-connect = sqlite3.connect('main_db.sqlite3')
-cur = connect.cursor()
-
 def insert_into(table, db_msg, db_answ):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
     query = f"INSERT INTO {table} (msg, answ) VALUES ('{db_msg}', '{db_answ}');"
     cur.execute(query)
-    return cur.fetchall()
+    cur.fetchall()
+
+    connect.commit()
+    connect.close()
 
 def get(table, col="*"):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
     query = f"SELECT {col} FROM {table}"
     cur.execute(query)
-    return cur.fetchall()
+    print(cur.fetchall())
 
-# result = insert_into("answer", "привет", "Ну привет-привет, <name>")
-# result = get("answer")
-# print(result)
+    connect.commit()
+    connect.close()
 
-# query = "INSERT INTO answer (msg, answ) VALUES ('/teach', 'Бот выучил новую команду! level up 📈');"
-query = "SELECT * FROM answer"
+get("answer")
+# insert_into("answer", "/start", "Бот-вк начинает работу! 🤖\n Доступные команды: \n 1. /say <text> - повторяет фразу <text> \n 2. /list - показывает содержание таблицы sql \n 3. /post - высылает пост (в разработке) \n 4. /teach <команда> <ответ> - обучение бота новым фразам")
+# insert_into("answer", "safasdf", "sadfsadg")
 
-cur.execute(query)
-result = cur.fetchall()
-print(result)
 
-connect.commit()
-connect.close()
+
 
 
