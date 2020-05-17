@@ -1,12 +1,5 @@
 import sqlite3
 
-# connect = sqlite3.connect('db.sqlite')
-# cur = connect.cursor()
-
-# query = """
-# INSERT INTO phonebook (id, name, p_number) VALUES (0, 'Ярик', 88005553535);
-# """
-
 # query = """
 # CREATE TABLE groups(
 #     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,17 +15,25 @@ import sqlite3
 # )
 # """
 
-# query = "DROP TABLE groups"
+# query = "DROP TABLE answer"
 
-# query = "DELETE FROM groups WHERE id < 10"
-
-# query = "SELECT * FROM answer;"
-
-def insert_into(table, db_msg, db_answ):
+def a():
     connect = sqlite3.connect('main_db.sqlite3')
     cur = connect.cursor()
 
-    query = f"INSERT INTO {table} (msg, answ) VALUES ('{db_msg}', '{db_answ}');"
+    query = f"INSERT INTO groups (group_name) VALUES ('User');"
+    
+    cur.execute(query)
+    cur.fetchall()
+
+    connect.commit()
+    connect.close()
+
+def insert_into(table, msg, answ):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
+    query = f"INSERT INTO {table} (msg, answ) VALUES ('{msg}', '{answ}');"
     cur.execute(query)
     cur.fetchall()
 
@@ -45,14 +46,43 @@ def get(table, col="*"):
 
     query = f"SELECT {col} FROM {table}"
     cur.execute(query)
-    print(cur.fetchall())
+    result = cur.fetchall()
+    print(result)
+
+    connect.commit()
+    connect.close()
+    return result
+
+
+def delete(table):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
+    query = f"DELETE FROM {table}"
+    cur.execute(query)
+    cur.fetchall()
 
     connect.commit()
     connect.close()
 
-get("answer")
-# insert_into("answer", "/start", "Бот-вк начинает работу! 🤖\n Доступные команды: \n 1. /say <text> - повторяет фразу <text> \n 2. /list - показывает содержание таблицы sql \n 3. /post - высылает пост (в разработке) \n 4. /teach <команда> <ответ> - обучение бота новым фразам")
-# insert_into("answer", "safasdf", "sadfsadg")
+def update(table, col, text, id):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
+    query_1 = f"UPDATE {table} SET {col} = '{text}' WHERE id = {id}"
+    cur.execute(query_1)
+    query_2 = f"SELECT {col} FROM {table} WHERE id = {id}"
+    cur.execute(query_2)
+    result = cur.fetchall()
+
+    connect.commit()
+    connect.close()
+    return result
+
+# a()
+get("groups")
+
+
 
 
 

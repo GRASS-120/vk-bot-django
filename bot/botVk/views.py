@@ -18,53 +18,34 @@ def bot(request):
     owner_id = -194135879
     print(body)
 
-    # connect = sqlite3.connect('db.sqlite')
-    # cur = connect.cursor()
-
     # Подтверждение сервера
     if body == {"type": "confirmation", "group_id": 194135879, "secret": "very1secre2tkey3vk4bota"}:  #Берем запрос и ответ в CallBack API 
-        return HttpResponse("54443df9")
+        return HttpResponse("2e6cbf64")
 
     if body["type"] == "message_new":
 
-        random_id = random.randint(1, 999999999999999999)
         user_id = body["object"]["message"]["from_id"]
         split_body = body["object"]["message"]["text"].split(maxsplit=3)
-        # query_msg = cur.execute("SELECT msg FROM answer").fetchall()
+        query_msg = database.get("answer", "msg")
         user_msg = body["object"]["message"]["text"]
 
-        # if user_msg == 'Начать':
-        #     if body["object"]["message"]["payload"] == """{"command":"start"}""":
-        #         keyboard_start(request, user_id, random_id)
+        if user_msg == 'Начать':
+            if body["object"]["message"]["payload"] == """{"command":"start"}""":
+                keyboard_start(request, user_id)
 
-        if user_msg == "/list":
+        elif user_msg in query_msg[0][0] and user_msg == "/list":
+            msg = database.get("answer")
+            print(query_msg[1])
+            send_message(user_id, msg)
 
-            query = "SELECT id FROM answer"
-            # cur.execute(query)
-            # result = cur.fetchall()
-            msg = []
+        elif user_msg in query_msg[2][0] and user_msg == "/start":
+            msg = database.get("answer", "answ")[0]
+            send_message(user_id, msg)
 
-            for i in range(len(result)):
-                query = f"SELECT * FROM answer WHERE id = {i+1}"
-                # cur.execute(query)
-                # msg.append(cur.fetchall())
-                print(msg[i])
-        
-            send_message(user_id, msg, random_id)
-
-        elif user_msg in query_msg[0] and user_msg == "/start":
-            query = "SELECT answ FROM answer"
-            # cur.execute(query)
-            # msg = cur.fetchall()[0]
-            send_message(user_id, msg, random_id)
-
-        elif user_msg in query_msg[2] and user_msg.casefold() == 'привет':
-            query = f"UPDATE answer SET answ = 'Ну привет-привет, {get_user_name(user_id)}' WHERE id = 3 "
-            # cur.execute(query)
-            query = "SELECT answ FROM answer"
-            # cur.execute(query)
-            # msg = cur.fetchall()[2]
-            send_message(user_id, msg, random_id) 
+        elif user_msg.casefold() in query_msg[4][0] and user_msg.casefold() == 'привет':
+            hello_text = f'Ну привет-привет, {get_user_name(user_id)}'
+            msg = database.update("answer", "answ", hello_text, 5)[0]
+            send_message(user_id, msg) 
 
         elif split_body[0] == '/say':
             if len(split_body) == 2:
@@ -74,40 +55,39 @@ def bot(request):
             else:
                 text = f"{split_body[1]} {split_body[2]} {split_body[3]}"
             msg = text
-            send_message(user_id, msg, random_id)
+            send_message(user_id, msg)
 
-        elif user_msg in query_msg[1] and user_msg == "/post":
-            query = "SELECT answ FROM answer"
-            # cur.execute(query)
-            # msg = cur.fetchall()[1]
+        elif user_msg in query_msg[1][0] and user_msg == "/post":
+            msg = database.get("answer", "answ")[2]
             attachment = f"wall{owner_id}_2"
-            send_message(user_id, msg, random_id, attachment)
+            send_message(user_id, msg, attachment)
 
         elif split_body[0] == '/teach':
-            if len(split_body) > 4:
+            if len(split_body) == 4:
                 db_msg = split_body[1]
                 db_answ = split_body[2]
 
-                print(db_msg, db_answ)
+                database.insert_into("answer", db_msg, db_answ)
+                msg = database.get("answer", "answ")[3]
+                send_message(user_id, msg)
+            else:
+                msg = "При обучении бота что-то пошло не так. Проверь правильность написания команды"
+                send_message(user_id, msg)
 
-                # msg = f'Бот выучил новую команду! level up 📈 \n {database.create(db_msg, db_answ)}'
-                send_message(user_id, msg, random_id)
-
-        elif body["object"]["message"]["attachments"][0]["type"] == "sticker":
-            msg = 'Че стикеры шлешь?! 😡'
-            send_message(user_id, msg, random_id)
-            print(body)
+        # elif body["object"]["message"]["attachments"][0]["type"] == "sticker":
+        #     msg = 'Че стикеры шлешь?! 😡'
+        #     send_message(user_id, msg)
+        #     print(body)
 
         else:
             msg = 'Чет не понимаю, что ты мне пишешь, но ты можешь обучить меня с помощью команды /teach'
-            send_message(user_id, msg, random_id)
+            send_message(user_id, msg)
 
-    # connect.close()
     return HttpResponse("ok")
 
 ########
 
-def keyboard_start(request, user_id, random_id):
+def keyboard_start(request, user_id):
     msg = "Привет! Выбери свою группу пользователя:"
     keyboard = json.dumps({
         "one_time": True,
@@ -139,7 +119,7 @@ def keyboard_start(request, user_id, random_id):
         ]]
     })
 
-    send_message(user_id, msg, random_id, keyboard = keyboard)
+    send_message(user_id, msg, keyboard = keyboard)
 
 # Получение имени пользователя
 def get_user_name(user_id):
@@ -150,8 +130,8 @@ def get_user_city(user_id):
     return vkAPI.users.get(user_id=user_id, fields='city', v=5.103)[0]['city']['title']
 
 # Отправка сообщения
-def send_message(user_id="", msg="", random_id="", attachment="", keyboard=""):
-    vkAPI.messages.send(user_id=user_id, message=msg, keyboard=keyboard, random_id = random_id, attachment=attachment, v=5.103)
+def send_message(user_id="", msg="", attachment="", keyboard=""):
+    vkAPI.messages.send(user_id=user_id, message=msg, keyboard=keyboard, random_id=random.randint(1, 999999999999999999), attachment=attachment, v=5.103)
 
          
 

@@ -25,7 +25,7 @@ SECRET_KEY = '-*_xv5@(jk7@v55b1!l3zw7r9hat5&ywevroigc4#l%)hvg=3*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True                                                
 
-ALLOWED_HOSTS = ['vkbotlev1-a7993eea.localhost.run']
+ALLOWED_HOSTS = ['vkbotlev321-fdccea9f.localhost.run']
 
 
 # Application definition
