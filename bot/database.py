@@ -9,7 +9,7 @@ import sqlite3
 
 # query = """
 # CREATE TABLE users(
-#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     id INTEGER PRIMARY KEY,
 #     group_id INT,
 #     FOREIGN KEY (group_id) REFERENCES groups(id)
 # )
@@ -17,23 +17,25 @@ import sqlite3
 
 # query = "DROP TABLE answer"
 
-def a():
-    connect = sqlite3.connect('main_db.sqlite3')
-    cur = connect.cursor()
 
-    query = f"INSERT INTO groups (group_name) VALUES ('User');"
-    
-    cur.execute(query)
-    cur.fetchall()
-
-    connect.commit()
-    connect.close()
+#/////////////// public /////////////////#
 
 def insert_into(table, msg, answ):
     connect = sqlite3.connect('main_db.sqlite3')
     cur = connect.cursor()
 
     query = f"INSERT INTO {table} (msg, answ) VALUES ('{msg}', '{answ}');"
+    cur.execute(query)
+    cur.fetchall()
+
+    connect.commit()
+    connect.close()
+
+def insert_into_users(id, group_id):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
+
+    query = f"INSERT INTO users (id, group_id) VALUES ({id}, {group_id});"
     cur.execute(query)
     cur.fetchall()
 
@@ -54,17 +56,6 @@ def get(table, col="*"):
     return result
 
 
-def delete(table):
-    connect = sqlite3.connect('main_db.sqlite3')
-    cur = connect.cursor()
-
-    query = f"DELETE FROM {table}"
-    cur.execute(query)
-    cur.fetchall()
-
-    connect.commit()
-    connect.close()
-
 def update(table, col, text, id):
     connect = sqlite3.connect('main_db.sqlite3')
     cur = connect.cursor()
@@ -79,12 +70,44 @@ def update(table, col, text, id):
     connect.close()
     return result
 
-# a()
-get("groups")
+#/////////////// dev /////////////////#
 
+def test():
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
 
+    query = """
+    CREATE TABLE users(
+        id INTEGER PRIMARY KEY,
+        group_id INT,
+        FOREIGN KEY (group_id) REFERENCES groups(id)
+    )
+    """
+    cur.execute(query)
+    cur.fetchall()
 
+    connect.commit()
+    connect.close()
 
+def delete_user(id):
+    connect = sqlite3.connect('main_db.sqlite3')
+    cur = connect.cursor()
 
+    query = f"DELETE FROM users WHERE id={id}"
+    cur.execute(query)
+    cur.fetchall()
 
+    connect.commit()
+    connect.close()
 
+# test()
+a = get("users")
+l = []
+
+# for i in range(len(a)):
+#     for j in range(len(a[i])):
+#         print(a[i][j], end=' ')
+#         l.append(a[i][j])
+#         print(l)
+
+get("answer")
