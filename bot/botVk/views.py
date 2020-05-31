@@ -20,7 +20,7 @@ def bot(request):
 
     # Подтверждение сервера
     if body == {"type": "confirmation", "group_id": 194135879, "secret": "very1secre2tkey3vk4bota"}:  #Берем запрос и ответ в CallBack API 
-        return HttpResponse("ff10f968")
+        return HttpResponse("771a5e5c")
 
     # Обработчик сообщений
     if body["type"] == "message_new":
