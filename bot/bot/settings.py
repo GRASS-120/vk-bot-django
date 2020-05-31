@@ -26,7 +26,7 @@ SECRET_KEY = '-*_xv5@(jk7@v55b1!l3zw7r9hat5&ywevroigc4#l%)hvg=3*'
 DEBUG = True                                                
 
 ALLOWED_HOSTS = ['vkbotlev222-9e72a09a.localhost.run', '127.0.0.1', 'localhost', 'https://bot-vk-django.herokuapp.com/']
-CORS_ORIGIN_WHITELIST = ["https://bot-vk-django.herokuapp.com/"]
+CORS_ORIGIN_WHITELIST = ["https://bot-vk-django.herokuapp.com"]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
